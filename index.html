@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ParselCBS — Kadastro & Ulusal Koordinat Analiz Sistemi</title>
+  <title>Parsel Harita & Ulusal Koordinat Analiz Sistemi</title>
 
-  <!-- Leaflet Harita Kütüphanesi -->
+  <!-- Leaflet Harita CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <!-- Proj4js (Projeksiyon ve Koordinat Dönüşüm Motoru) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.2/proj4.js"></script>
@@ -26,83 +26,87 @@
       color: #f8fafc;
     }
 
-    /* 1. Üst Tek İnce Yatay Bar */
+    /* 1. ÜST TEK İNCE YATAY SATIR */
     #top-bar {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 52px;
-      background: rgba(15, 23, 42, 0.94);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      height: 50px;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
-      padding: 0 16px;
-      gap: 10px;
+      padding: 0 14px;
+      gap: 8px;
       z-index: 1000;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
-    .brand-tag {
+    .brand-logo {
       font-weight: 700;
-      font-size: 14px;
+      font-size: 13px;
       letter-spacing: 0.5px;
       color: #38bdf8;
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-right: 6px;
+      margin-right: 4px;
       white-space: nowrap;
     }
 
-    .form-group {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .brand-logo svg {
+      width: 16px;
+      height: 16px;
+      fill: #38bdf8;
     }
 
-    .form-group label {
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .input-group label {
       font-size: 11px;
       text-transform: uppercase;
-      font-weight: 600;
+      font-weight: 700;
       color: #94a3b8;
       white-space: nowrap;
     }
 
-    select, input {
+    select, input[type="number"], input[type="text"] {
       background: #1e293b;
       border: 1px solid #334155;
-      color: #f1f5f9;
+      color: #f8fafc;
       height: 32px;
       padding: 0 8px;
       border-radius: 6px;
       font-size: 12px;
       outline: none;
-      transition: all 0.2s ease;
+      transition: all 0.2s;
     }
 
     select:focus, input:focus {
       border-color: #38bdf8;
-      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
     }
 
-    select {
-      min-width: 110px;
-      cursor: pointer;
-    }
+    #select-il { min-width: 125px; cursor: pointer; }
+    #select-ilce { min-width: 125px; cursor: pointer; }
+    #select-mahalle { min-width: 140px; cursor: pointer; }
 
-    input[type="number"] {
-      width: 75px;
-      -moz-appearance: textfield;
-    }
+    #input-ada { width: 75px; text-align: center; }
+    #input-parsel { width: 75px; text-align: center; }
+
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
     }
 
-    button.btn-primary {
+    button.btn-sorgula {
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
       border: 1px solid #38bdf8;
       color: #ffffff;
@@ -110,7 +114,7 @@
       padding: 0 16px;
       border-radius: 6px;
       font-size: 12px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -119,66 +123,68 @@
       white-space: nowrap;
     }
 
-    button.btn-primary:hover {
+    button.btn-sorgula:hover {
       background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
     }
 
-    button.btn-secondary {
+    .divider {
+      width: 1px;
+      height: 22px;
+      background: #334155;
+      margin: 0 4px;
+    }
+
+    button.btn-util {
       background: #334155;
       border: 1px solid #475569;
-      color: #e2e8f0;
+      color: #cbd5e1;
       height: 32px;
       padding: 0 10px;
       border-radius: 6px;
       font-size: 11px;
+      font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
       white-space: nowrap;
     }
 
-    button.btn-secondary:hover {
+    button.btn-util:hover {
       background: #475569;
+      color: #ffffff;
     }
 
-    .separator {
-      width: 1px;
-      height: 24px;
-      background: #334155;
-      margin: 0 4px;
-    }
-
-    /* Harita Alanı */
+    /* 2. TAM EKRAN HARİTA ALANI */
     #map {
       position: absolute;
-      top: 52px;
+      top: 50px;
       left: 0;
       right: 0;
       bottom: 0;
       z-index: 1;
     }
 
-    /* Sağ Alt Bilgi Kartı (HUD / Koordinat Kartı) */
-    #info-panel {
+    /* 3. SAĞ ALT MEKÂNSAL BİLGİ PANELİ (HUD) */
+    #hud-panel {
       position: absolute;
       bottom: 24px;
       right: 24px;
-      width: 360px;
-      max-height: calc(100vh - 100px);
+      width: 380px;
+      max-height: calc(100vh - 90px);
       background: rgba(15, 23, 42, 0.95);
       backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 12px;
+      border-radius: 10px;
       z-index: 1000;
-      padding: 16px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      padding: 14px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
       display: none;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       overflow-y: auto;
     }
 
-    .panel-header {
+    .hud-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -186,52 +192,55 @@
       padding-bottom: 8px;
     }
 
-    .panel-title {
-      font-size: 14px;
+    .hud-title {
+      font-size: 13px;
       font-weight: 700;
       color: #38bdf8;
     }
 
-    .badge {
+    .badge-dom {
       background: #0369a1;
       color: #e0f2fe;
-      padding: 2px 6px;
+      padding: 2px 7px;
       border-radius: 4px;
       font-size: 10px;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.5px;
     }
 
-    .info-grid {
+    .meta-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      font-size: 11px;
+      gap: 6px;
     }
 
-    .info-box {
+    .meta-item {
       background: #1e293b;
       padding: 6px 8px;
-      border-radius: 6px;
+      border-radius: 5px;
       border: 1px solid #334155;
     }
 
-    .info-label {
+    .meta-label {
       color: #94a3b8;
       font-size: 10px;
       display: block;
       margin-bottom: 2px;
+      text-transform: uppercase;
     }
 
-    .info-value {
+    .meta-val {
+      font-size: 11px;
       font-weight: 600;
-      color: #f8fafc;
+      color: #f1f5f9;
     }
 
-    .coord-table-wrap {
-      max-height: 160px;
-      overflow-y: auto;
+    .coord-container {
       border: 1px solid #334155;
       border-radius: 6px;
+      max-height: 150px;
+      overflow-y: auto;
+      background: #0b1120;
     }
 
     table {
@@ -242,136 +251,138 @@
     }
 
     th, td {
-      padding: 4px 6px;
+      padding: 5px 6px;
       border-bottom: 1px solid #1e293b;
     }
 
     th {
       background: #1e293b;
       color: #94a3b8;
-      font-weight: 600;
+      font-weight: 700;
       position: sticky;
       top: 0;
+      font-size: 9px;
+      text-transform: uppercase;
     }
 
     td {
-      font-family: "Courier New", Courier, monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       color: #cbd5e1;
     }
 
-    td:first-child, th:first-child {
-      text-align: center;
-    }
+    td:first-child, th:first-child { text-align: center; }
 
-    #loading-spinner {
+    #loading-toast {
       display: none;
       position: absolute;
-      top: 64px;
+      top: 62px;
       left: 50%;
       transform: translateX(-50%);
       background: #0284c7;
       color: white;
-      padding: 6px 16px;
+      padding: 7px 18px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
       z-index: 2000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.35);
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. ÜST TEK İNCE YATAY SATIR -->
+  <!-- ÜST TEK İNCE SATIR -->
   <header id="top-bar">
-    <div class="brand-tag">
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       ParselCBS
     </div>
 
-    <!-- İl -->
-    <div class="form-group">
+    <!-- 1. İL (81 İL TAM LİSTE) -->
+    <div class="input-group">
       <label for="select-il">İl</label>
       <select id="select-il">
         <option value="">İl Seçiniz...</option>
       </select>
     </div>
 
-    <!-- İlçe -->
-    <div class="form-group">
+    <!-- 2. İLÇE -->
+    <div class="input-group">
       <label for="select-ilce">İlçe</label>
       <select id="select-ilce" disabled>
-        <option value="">Önce İl</option>
+        <option value="">Önce İl Seçin</option>
       </select>
     </div>
 
-    <!-- Mahalle -->
-    <div class="form-group">
+    <!-- 3. MAHALLE -->
+    <div class="input-group">
       <label for="select-mahalle">Mahalle</label>
       <select id="select-mahalle" disabled>
-        <option value="">Önce İlçe</option>
+        <option value="">Önce İlçe Seçin</option>
       </select>
     </div>
 
-    <!-- Ada -->
-    <div class="form-group">
+    <!-- 4. ADA -->
+    <div class="input-group">
       <label for="input-ada">Ada</label>
       <input type="number" id="input-ada" placeholder="Ada No" />
     </div>
 
-    <!-- Parsel -->
-    <div class="form-group">
+    <!-- 5. PARSEL -->
+    <div class="input-group">
       <label for="input-parsel">Parsel</label>
-      <input type="number" id="input-parsel" placeholder="Parsel" />
+      <input type="number" id="input-parsel" placeholder="Parsel No" />
     </div>
 
-    <!-- Sorgula Butonu -->
-    <button class="btn-primary" id="btn-sorgula" onclick="executeParcelQuery()">
+    <!-- 6. SORGULA BUTONU -->
+    <button class="btn-sorgula" id="btn-sorgula" onclick="triggerQuery()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       Sorgula
     </button>
 
-    <div class="separator"></div>
+    <div class="divider"></div>
 
-    <!-- Pratik Hızlı Butonlar -->
-    <button class="btn-secondary" onclick="loadSampleParcel()">Bursa Nilüfer Örnek</button>
-    <button class="btn-secondary" onclick="promptGeoJSON()">GeoJSON Yapıştır</button>
+    <!-- Hızlı Eylemler -->
+    <button class="btn-util" onclick="loadBursaSample()">Bursa Nilüfer Örnek</button>
+    <button class="btn-util" onclick="openGeoJsonModal()">GeoJSON Yapıştır</button>
   </header>
 
-  <!-- Yükleniyor Uyarısı -->
-  <div id="loading-spinner">TKGM Kadastro Verisi Çekiliyor & Hesaplanıyor...</div>
+  <!-- Bildirim Toast -->
+  <div id="loading-toast">Parsel sorgulanıyor ve ulusal koordinatlara çevriliyor...</div>
 
-  <!-- 2. TAM EKRAN HARİTA -->
+  <!-- TAM EKRAN HARİTA -->
   <div id="map"></div>
 
-  <!-- 3. SAĞ ALT MEKÂNSAL & ULUSAL KOORDİNAT PANELİ (HUD) -->
-  <div id="info-panel">
-    <div class="panel-header">
-      <span class="panel-title" id="info-title">Ada / Parsel Detayı</span>
-      <span class="badge" id="info-dom">ITRF96 TM 3°</span>
+  <!-- SAĞ ALT MEKÂNSAL & ULUSAL KOORDİNAT HUD KARTI -->
+  <div id="hud-panel">
+    <div class="hud-header">
+      <span class="hud-title" id="hud-title">Ada / Parsel Detayı</span>
+      <span class="badge-dom" id="hud-dom">ITRF96 TM 3°</span>
     </div>
 
-    <div class="info-grid">
-      <div class="info-box">
-        <span class="info-label">Konum</span>
-        <span class="info-value" id="info-location">-</span>
+    <div class="meta-grid">
+      <div class="meta-item">
+        <span class="meta-label">Mevkii / Konum</span>
+        <span class="meta-val" id="hud-loc">-</span>
       </div>
-      <div class="info-box">
-        <span class="info-label">Nitelik / Pafta</span>
-        <span class="info-value" id="info-type">-</span>
+      <div class="meta-item">
+        <span class="meta-label">Nitelik / Pafta</span>
+        <span class="meta-val" id="hud-meta">-</span>
       </div>
-      <div class="info-box">
-        <span class="info-label">Tapu Alanı</span>
-        <span class="info-value" id="info-deed-area">- m²</span>
+      <div class="meta-item">
+        <span class="meta-label">Tapu Alanı</span>
+        <span class="meta-val" id="hud-deed-area">-</span>
       </div>
-      <div class="info-box">
-        <span class="info-label">Hesaplanan Alan (ITRF)</span>
-        <span class="info-value" id="info-calc-area" style="color: #38bdf8;">- m²</span>
+      <div class="meta-item">
+        <span class="meta-label">Hesaplanan Alan (ITRF96)</span>
+        <span class="meta-val" id="hud-calc-area" style="color: #38bdf8;">-</span>
       </div>
     </div>
 
-    <!-- Ulusal Metrik Koordinat Listesi -->
+    <!-- Ulusal Koordinat Tablosu (ITRF96 GRS80) -->
     <div>
-      <span class="info-label" style="margin-bottom: 4px;">Ulusal Metrik Koordinatlar (ITRF96 - GRS80)</span>
-      <div class="coord-table-wrap">
+      <span class="meta-label" style="margin-bottom: 4px;">Ulusal Koordinat Listesi (ITRF96 - GRS80)</span>
+      <div class="coord-container">
         <table>
           <thead>
             <tr>
@@ -380,17 +391,17 @@
               <th>X (Yukarı / m)</th>
             </tr>
           </thead>
-          <tbody id="coord-table-body"></tbody>
+          <tbody id="coord-tbody"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- CAD / Dışa Aktarma Butonları -->
-    <div style="display: flex; gap: 8px; margin-top: 4px;">
-      <button class="btn-primary" style="flex: 1;" onclick="copyCadScript()">
+    <!-- CAD / Dışa Aktarım Butonları -->
+    <div style="display: flex; gap: 8px;">
+      <button class="btn-sorgula" style="flex: 1;" onclick="copyAutoCadPline()">
         AutoCAD Komut Kopyala
       </button>
-      <button class="btn-secondary" onclick="exportGeoJson()">
+      <button class="btn-util" onclick="downloadGeoJson()">
         GeoJSON İndir
       </button>
     </div>
@@ -401,49 +412,73 @@
 
   <script>
     /* ==========================================================================
-       1. HARİTA KURULUMU & UYDU ALTLIKLARI
+       TÜRKİYE 81 İL TAM LİSTESİ (TKGM MÜLKİ İDARE KODLARI İLE)
        ========================================================================== */
-    const map = L.map('map', {
-      zoomControl: false,
-      attributionControl: false
-    }).setView([40.23, 28.95], 11);
+    const TURKIYE_81_IL = [
+      { id: 1, ad: "Adana" }, { id: 2, ad: "Adıyaman" }, { id: 3, ad: "Afyonkarahisar" },
+      { id: 4, ad: "Ağrı" }, { id: 68, ad: "Aksaray" }, { id: 5, ad: "Amasya" },
+      { id: 6, ad: "Ankara" }, { id: 7, ad: "Antalya" }, { id: 75, ad: "Ardahan" },
+      { id: 8, ad: "Artvin" }, { id: 9, ad: "Aydın" }, { id: 10, ad: "Balıkesir" },
+      { id: 74, ad: "Bartın" }, { id: 72, ad: "Batman" }, { id: 69, ad: "Bayburt" },
+      { id: 11, ad: "Bilecik" }, { id: 12, ad: "Bingöl" }, { id: 13, ad: "Bitlis" },
+      { id: 14, ad: "Bolu" }, { id: 15, ad: "Burdur" }, { id: 16, ad: "Bursa" },
+      { id: 17, ad: "Çanakkale" }, { id: 18, ad: "Çankırı" }, { id: 19, ad: "Çorum" },
+      { id: 20, ad: "Denizli" }, { id: 21, ad: "Diyarbakır" }, { id: 81, ad: "Düzce" },
+      { id: 22, ad: "Edirne" }, { id: 23, ad: "Elazığ" }, { id: 24, ad: "Erzincan" },
+      { id: 25, ad: "Erzurum" }, { id: 26, ad: "Eskişehir" }, { id: 27, ad: "Gaziantep" },
+      { id: 28, ad: "Giresun" }, { id: 29, ad: "Gümüşhane" }, { id: 30, ad: "Hakkari" },
+      { id: 31, ad: "Hatay" }, { id: 76, ad: "Iğdır" }, { id: 32, ad: "Isparta" },
+      { id: 34, ad: "İstanbul" }, { id: 35, ad: "İzmir" }, { id: 46, ad: "Kahramanmaraş" },
+      { id: 78, ad: "Karabük" }, { id: 70, ad: "Karaman" }, { id: 36, ad: "Kars" },
+      { id: 37, ad: "Kastamonu" }, { id: 38, ad: "Kayseri" }, { id: 71, ad: "Kırıkkale" },
+      { id: 39, ad: "Kırklareli" }, { id: 40, ad: "Kırşehir" }, { id: 79, ad: "Kilis" },
+      { id: 41, ad: "Kocaeli" }, { id: 42, ad: "Konya" }, { id: 43, ad: "Kütahya" },
+      { id: 44, ad: "Malatya" }, { id: 45, ad: "Manisa" }, { id: 47, ad: "Mardin" },
+      { id: 33, ad: "Mersin" }, { id: 48, ad: "Muğla" }, { id: 49, ad: "Muş" },
+      { id: 50, ad: "Nevşehir" }, { id: 51, ad: "Niğde" }, { id: 52, ad: "Ordu" },
+      { id: 80, ad: "Osmaniye" }, { id: 53, ad: "Rize" }, { id: 54, ad: "Sakarya" },
+      { id: 55, ad: "Samsun" }, { id: 56, ad: "Siirt" }, { id: 57, ad: "Sinop" },
+      { id: 58, ad: "Sivas" }, { id: 63, ad: "Şanlıurfa" }, { id: 73, ad: "Şırnak" },
+      { id: 59, ad: "Tekirdağ" }, { id: 60, ad: "Tokat" }, { id: 61, ad: "Trabzon" },
+      { id: 62, ad: "Tunceli" }, { id: 64, ad: "Uşak" }, { id: 65, ad: "Van" },
+      { id: 77, ad: "Yalova" }, { id: 66, ad: "Yozgat" }, { id: 67, ad: "Zonguldak" }
+    ];
 
-    L.control.zoom({ position: 'bottomleft' }).addTo(map);
-
-    // Google Hibrit Uydu Katmanı
-    const googleSatellite = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
-      maxZoom: 22,
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-    }).addTo(map);
-
-    // OpenStreetMap Vektör Katmanı
-    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19
-    });
-
-    L.control.layers({
-      "Uydu (Hibrit)": googleSatellite,
-      "Sokak Haritası": osm
-    }, null, { position: 'bottomleft' }).addTo(map);
-
-    let activeParcelLayer = null;
-    let currentGeoJsonData = null;
-    let currentConvertedPoints = [];
+    // Bursa ilçeleri için doğrudan yerel hızlı liste
+    const BURSA_ILCELERI = [
+      { id: 1198, ad: "Büyükorhan" }, { id: 1343, ad: "Gemlik" }, { id: 1935, ad: "Gürsu" },
+      { id: 1378, ad: "Harmancık" }, { id: 1411, ad: "İnegöl" }, { id: 1420, ad: "İznik" },
+      { id: 1434, ad: "Karacabey" }, { id: 1457, ad: "Keles" }, { id: 1960, ad: "Kestel" },
+      { id: 1530, ad: "Mudanya" }, { id: 1535, ad: "Mustafakemalpaşa" }, { id: 1829, ad: "Nilüfer" },
+      { id: 1553, ad: "Orhaneli" }, { id: 1554, ad: "Orhangazi" }, { id: 1832, ad: "Osmangazi" },
+      { id: 1725, ad: "Yenişehir" }, { id: 1859, ad: "Yıldırım" }
+    ];
 
     /* ==========================================================================
-       2. GEODEZİK MATEMATİK: WGS84 -> ITRF96 TM 3° DÖNÜŞÜM MOTORU
+       HARİTA BAŞLATMA
        ========================================================================== */
-    function convertWgs84ToItrf96(lng, lat, forcedDom = null) {
-      // Dilim Orta Meridyeni (DOM) Tayini (3° dilimler: 27, 30, 33, 36, 39, 42, 45)
-      const dom = forcedDom !== null ? forcedDom : Math.round(lng / 3.0) * 3;
+    const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([40.23, 28.95], 11);
+    L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
-      // Proj4js için ITRF96 / GRS80 TM 3° Tanımı
+    const googleSatellite = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 22 }).addTo(map);
+    const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 });
+
+    L.control.layers({ "Google Hibrit Uydu": googleSatellite, "Sokak Haritası": osmLayer }, null, { position: 'bottomleft' }).addTo(map);
+
+    let activePolygonLayer = null;
+    let loadedGeoJson = null;
+    let convertedItrfCoords = [];
+
+    /* ==========================================================================
+       ULUSAL KOORDİNAT SİSTEMİ (ITRF96 TM 3° / GRS80) ÇEVRİMİ
+       ========================================================================== */
+    function wgs84ToItrf96(lon, lat, overrideDom = null) {
+      const dom = overrideDom !== null ? overrideDom : Math.round(lon / 3.0) * 3;
+
       const itrfDef = `+proj=tmerc +lat_0=0 +lon_0=${dom} +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs`;
       const wgs84Def = '+proj=longlat +datum=WGS84 +no_defs';
 
-      // Dönüşüm [x, y] -> x = Easting (Sağa), y = Northing (Yukarı)
-      const [easting, northing] = proj4(wgs84Def, itrfDef, [lng, lat]);
-
+      const [easting, northing] = proj4(wgs84Def, itrfDef, [lon, lat]);
       return {
         dom: dom,
         y: Number(easting.toFixed(3)),
@@ -451,7 +486,7 @@
       };
     }
 
-    function calculateMetricPolygonArea(points) {
+    function calculatePolygonAreaMetric(points) {
       let area = 0.0;
       const n = points.length;
       for (let i = 0; i < n; i++) {
@@ -463,85 +498,82 @@
     }
 
     /* ==========================================================================
-       3. PARSEL GEOMETRİSİ RENDER VE ANALİZİ
+       GEOJSON PARSEL ÇİZİMİ & ULUSAL SİSTEME UYGULAMA (PROPARCEL ANLAYIŞI)
        ========================================================================== */
-    function renderParcel(geoJsonFeature, meta = {}) {
-      if (activeParcelLayer) {
-        map.removeLayer(activeParcelLayer);
+    function applyParcelGeoJson(geoJsonData, meta = {}) {
+      if (activePolygonLayer) {
+        map.removeLayer(activePolygonLayer);
       }
+      loadedGeoJson = geoJsonData;
 
-      currentGeoJsonData = geoJsonFeature;
-
-      activeParcelLayer = L.geoJSON(geoJsonFeature, {
+      activePolygonLayer = L.geoJSON(geoJsonData, {
         style: {
           color: '#ef4444',
           weight: 2.5,
           opacity: 1,
-          fillColor: '#38bdf8',
-          fillOpacity: 0.25
+          fillColor: '#0284c7',
+          fillOpacity: 0.28
         }
       }).addTo(map);
 
-      map.fitBounds(activeParcelLayer.getBounds(), { padding: [80, 80], maxZoom: 19 });
+      map.fitBounds(activePolygonLayer.getBounds(), { padding: [70, 70], maxZoom: 19 });
 
-      const coords = extractCoordinates(geoJsonFeature.geometry);
-      if (!coords || coords.length === 0) return;
+      const geom = geoJsonData.geometry || (geoJsonData.features && geoJsonData.features[0].geometry);
+      let rawRing = [];
+      if (geom.type === 'Polygon') {
+        rawRing = geom.coordinates[0];
+      } else if (geom.type === 'MultiPolygon') {
+        rawRing = geom.coordinates[0][0];
+      }
 
-      currentConvertedPoints = [];
-      const tableBody = document.getElementById('coord-table-body');
-      tableBody.innerHTML = '';
+      if (!rawRing || rawRing.length === 0) return;
 
-      let domDetected = null;
+      convertedItrfCoords = [];
+      const tbody = document.getElementById('coord-tbody');
+      tbody.innerHTML = '';
 
-      coords.forEach((pt, index) => {
-        const [lng, lat] = pt;
-        const itrf = convertWgs84ToItrf96(lng, lat, domDetected);
-        domDetected = itrf.dom;
+      let detectedDom = null;
 
-        currentConvertedPoints.push({
-          pt: index + 1,
+      rawRing.forEach((pt, idx) => {
+        const [lon, lat] = pt;
+        const itrf = wgs84ToItrf96(lon, lat, detectedDom);
+        detectedDom = itrf.dom;
+
+        convertedItrfCoords.push({
+          no: idx + 1,
           y: itrf.y,
           x: itrf.x,
-          lng: lng,
+          lon: lon,
           lat: lat
         });
 
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${index + 1}</td><td>${itrf.y.toFixed(3)}</td><td>${itrf.x.toFixed(3)}</td>`;
-        tableBody.appendChild(tr);
+        tr.innerHTML = `<td>P${idx + 1}</td><td>${itrf.y.toFixed(3)}</td><td>${itrf.x.toFixed(3)}</td>`;
+        tbody.appendChild(tr);
       });
 
-      const calcArea = calculateMetricPolygonArea(currentConvertedPoints);
+      const calcArea = calculatePolygonAreaMetric(convertedItrfCoords);
 
-      document.getElementById('info-title').innerText = `${meta.ada || '-'} Ada / ${meta.parsel || '-'} Parsel`;
-      document.getElementById('info-dom').innerText = `ITRF96 DOM ${domDetected}°`;
-      document.getElementById('info-location').innerText = `${meta.il || ''} / ${meta.ilce || ''} / ${meta.mahalle || ''}`;
-      document.getElementById('info-type').innerText = `${meta.nitelik || 'Arsa'} - Pafta: ${meta.pafta || '-'}`;
-      document.getElementById('info-deed-area').innerText = meta.tapuAlani ? `${meta.tapuAlani}` : '-';
-      document.getElementById('info-calc-area').innerText = `${calcArea.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} m²`;
+      document.getElementById('hud-title').innerText = `${meta.ada || '-'} Ada / ${meta.parsel || '-'} Parsel`;
+      document.getElementById('hud-dom').innerText = `ITRF96 DOM ${detectedDom}°`;
+      document.getElementById('hud-loc').innerText = `${meta.il || ''} - ${meta.ilce || ''} / ${meta.mahalle || ''}`;
+      document.getElementById('hud-meta').innerText = `${meta.nitelik || 'Arsa'} (Pafta: ${meta.pafta || '-'})`;
+      document.getElementById('hud-deed-area').innerText = meta.tapuAlani ? `${meta.tapuAlani}` : '-';
+      document.getElementById('hud-calc-area').innerText = `${calcArea.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} m²`;
 
-      document.getElementById('info-panel').style.display = 'flex';
-    }
-
-    function extractCoordinates(geometry) {
-      if (geometry.type === 'Polygon') {
-        return geometry.coordinates[0];
-      } else if (geometry.type === 'MultiPolygon') {
-        return geometry.coordinates[0][0];
-      }
-      return null;
+      document.getElementById('hud-panel').style.display = 'flex';
     }
 
     /* ==========================================================================
-       4. CAD VE VERİ DIŞA AKTARIM FONKSİYONLARI
+       AUTOCAD KOMUTU ÜRETİCİSİ (0,0 ORIJIN KAYDIRMALI KAPALI POLİGON)
        ========================================================================== */
-    function copyCadScript() {
-      if (!currentConvertedPoints.length) return;
+    function copyAutoCadPline() {
+      if (!convertedItrfCoords.length) return;
 
-      const p1 = currentConvertedPoints[0];
+      const p1 = convertedItrfCoords[0];
       let script = `_LAYER _M PARSEL_SINIRI _C 1 PARSEL_SINIRI\n_PLINE\n`;
 
-      currentConvertedPoints.forEach(p => {
+      convertedItrfCoords.forEach(p => {
         const dx = (p.y - p1.y).toFixed(3);
         const dy = (p.x - p1.x).toFixed(3);
         script += `${dx},${dy}\n`;
@@ -549,78 +581,92 @@
       script += `_C\n_ZOOM _E\n`;
 
       navigator.clipboard.writeText(script).then(() => {
-        alert("AutoCAD komut dizilimi panoya kopyalandı! AutoCAD komut satırına (Command line) doğrudan Ctrl+V ile yapıştırabilirsiniz.");
+        alert("AutoCAD komut dizisi panoya kopyalandı!\nAutoCAD komut satırına (Command Line) yapıştırabilirsiniz.");
       });
     }
 
-    function exportGeoJson() {
-      if (!currentGeoJsonData) return;
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentGeoJsonData, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `parsel_${Date.now()}.geojson`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
+    function downloadGeoJson() {
+      if (!loadedGeoJson) return;
+      const blob = new Blob([JSON.stringify(loadedGeoJson, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `parsel_${Date.now()}.geojson`;
+      a.click();
     }
 
     /* ==========================================================================
-       5. TKGM / DIŞ SERVİS SORGULAMA MOTORU
+       PARSEL SORGULAMA MOTORU & DIŞ SERVİS BAĞLANTISI
        ========================================================================== */
-    async function executeParcelQuery() {
-      const ilSelect = document.getElementById('select-il');
-      const ilceSelect = document.getElementById('select-ilce');
-      const mahalleSelect = document.getElementById('select-mahalle');
-      const ada = document.getElementById('input-ada').value.trim();
-      const parsel = document.getElementById('input-parsel').value.trim();
+    async function fetchWithFallbackProxy(url) {
+      try {
+        const res = await fetch(url);
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("Doğrudan erişim CORS engeline takıldı, vekil deneniyor...");
+      }
 
-      if (!mahalleSelect.value || !ada || !parsel) {
-        alert("Lütfen İl, İlçe, Mahalle, Ada ve Parsel alanlarını eksiksiz girin.");
+      try {
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        const res = await fetch(proxyUrl);
+        if (res.ok) return await res.json();
+      } catch (e) {
+        console.warn("AllOrigins vekili yanıt vermedi, ikinci vekil deneniyor...");
+      }
+
+      try {
+        const res2 = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+        if (res2.ok) return await res2.json();
+      } catch (e) {}
+
+      throw new Error("Kamu CBS servisine ulaşılamadı.");
+    }
+
+    async function triggerQuery() {
+      const ilEl = document.getElementById('select-il');
+      const ilceEl = document.getElementById('select-ilce');
+      const mahalleEl = document.getElementById('select-mahalle');
+      const adaVal = document.getElementById('input-ada').value.trim();
+      const parselVal = document.getElementById('input-parsel').value.trim();
+
+      if (!mahalleEl.value || !adaVal || !parselVal) {
+        alert("Lütfen İl, İlçe, Mahalle seçimi yapın; Ada ve Parsel numaralarını girin.");
         return;
       }
 
-      const mahalleId = mahalleSelect.value;
-      const spinner = document.getElementById('loading-spinner');
-      spinner.style.display = 'block';
+      const toast = document.getElementById('loading-toast');
+      toast.style.display = 'block';
 
-      const targetUrl = `https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/${mahalleId}/${ada}/${parsel}`;
+      const mahalleId = mahalleEl.value;
+      const targetApi = `https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/${mahalleId}/${adaVal}/${parselVal}`;
 
       try {
-        let response;
-        try {
-          response = await fetch(targetUrl);
-        } catch (corsErr) {
-          response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`);
-        }
+        const data = await fetchWithFallbackProxy(targetApi);
+        toast.style.display = 'none';
 
-        const data = await response.json();
-        spinner.style.display = 'none';
-
-        if (data && data.geometry) {
-          renderParcel(data, {
-            il: ilSelect.options[ilSelect.selectedIndex].text,
-            ilce: ilceSelect.options[ilceSelect.selectedIndex].text,
-            mahalle: mahalleSelect.options[mahalleSelect.selectedIndex].text,
-            ada: ada,
-            parsel: parsel,
+        if (data && (data.geometry || data.features)) {
+          applyParcelGeoJson(data, {
+            il: ilEl.options[ilEl.selectedIndex].text,
+            ilce: ilceEl.options[ilceEl.selectedIndex].text,
+            mahalle: mahalleEl.options[mahalleEl.selectedIndex].text,
+            ada: adaVal,
+            parsel: parselVal,
             tapuAlani: data.properties?.alan,
             nitelik: data.properties?.nitelik,
             pafta: data.properties?.pafta
           });
         } else {
-          alert("Parsel verisi bulunamadı veya kurum servisinden yanıt alınamadı.");
+          alert("Parsel geometrisi bulunamadı.");
         }
       } catch (err) {
-        spinner.style.display = 'none';
-        console.error(err);
-        alert("Bağlantı hatası: Kamu CBS servisine erişilemedi. 'GeoJSON Yapıştır' veya 'Bursa Nilüfer Örnek' butonunu kullanabilirsiniz.");
+        toast.style.display = 'none';
+        alert("Kamu servisi geçici olarak yanıt vermedi. 'Bursa Nilüfer Örnek' veya 'GeoJSON Yapıştır' ile sistemi anında test edebilirsiniz.");
       }
     }
 
     /* ==========================================================================
-       6. ÖRNEK VERİ & GEOJSON MANUEL ENTEGRASYON YARDIMCILARI
+       ÖRNEK VERİ & GEOJSON MODALI
        ========================================================================== */
-    function loadSampleParcel() {
+    function loadBursaSample() {
       const sample = {
         "type": "Feature",
         "geometry": {
@@ -634,7 +680,7 @@
           ]]
         },
         "properties": {
-          "alan": "10.450 m²",
+          "alan": "10.450,00 m²",
           "nitelik": "Sanayi Arsası",
           "pafta": "H21-C-05-A"
         }
@@ -643,7 +689,7 @@
       document.getElementById('input-ada').value = "1483";
       document.getElementById('input-parsel').value = "8";
 
-      renderParcel(sample, {
+      applyParcelGeoJson(sample, {
         il: "Bursa",
         ilce: "Nilüfer",
         mahalle: "Minareliçavuş",
@@ -655,20 +701,20 @@
       });
     }
 
-    function promptGeoJSON() {
-      const input = prompt("GeoJSON metnini veya koordinat dizisini yapıştırın:");
-      if (!input) return;
+    function openGeoJsonModal() {
+      const raw = prompt("GeoJSON metnini veya koordinat dizisini yapıştırın:");
+      if (!raw) return;
       try {
-        const parsed = JSON.parse(input);
-        const feature = parsed.type === 'FeatureCollection' ? parsed.features[0] : (parsed.type === 'Feature' ? parsed : { type: 'Feature', geometry: parsed });
-        renderParcel(feature, {
-          il: "Manuel",
+        const parsed = JSON.parse(raw);
+        const feat = parsed.type === 'FeatureCollection' ? parsed.features[0] : (parsed.type === 'Feature' ? parsed : { type: 'Feature', geometry: parsed });
+        applyParcelGeoJson(feat, {
+          il: "Özel",
           ilce: "Girdi",
           mahalle: "GeoJSON",
           ada: "-",
           parsel: "-",
           tapuAlani: "-",
-          nitelik: "Özel Poligon"
+          nitelik: "Vektör Poligon"
         });
       } catch (e) {
         alert("Geçersiz GeoJSON formatı!");
@@ -676,55 +722,60 @@
     }
 
     /* ==========================================================================
-       7. İL LİSTESİ VE DİNAMİK DROPDOWN YÖNETİMİ
+       SAYFA BAŞLATMA & 81 İL / İLÇE DOLDURMA
        ========================================================================== */
-    const TURKIYE_ILLERI = [
-      { id: 1, ad: "Adana" }, { id: 2, ad: "Adıyaman" }, { id: 3, ad: "Afyonkarahisar" },
-      { id: 6, ad: "Ankara" }, { id: 7, ad: "Antalya" }, { id: 16, ad: "Bursa" },
-      { id: 34, ad: "İstanbul" }, { id: 35, ad: "İzmir" }, { id: 41, ad: "Kocaeli" },
-      { id: 54, ad: "Sakarya" }
-    ];
-
     window.addEventListener('DOMContentLoaded', () => {
       const ilSelect = document.getElementById('select-il');
-      TURKIYE_ILLERI.sort((a,b) => a.ad.localeCompare(b.ad, 'tr')).forEach(il => {
+      const ilceSelect = document.getElementById('select-ilce');
+      const mahalleSelect = document.getElementById('select-mahalle');
+
+      // 81 İlin Tamamını Alfabetik Doldur
+      TURKIYE_81_IL.forEach(il => {
         const opt = document.createElement('option');
         opt.value = il.id;
         opt.innerText = il.ad;
         ilSelect.appendChild(opt);
       });
 
+      // İl Seçildiğinde
       ilSelect.addEventListener('change', async (e) => {
-        const ilId = e.target.value;
-        const ilceSelect = document.getElementById('select-ilce');
-        const mahalleSelect = document.getElementById('select-mahalle');
+        const ilId = Number(e.target.value);
         ilceSelect.innerHTML = '<option value="">Yükleniyor...</option>';
         ilceSelect.disabled = true;
-        mahalleSelect.innerHTML = '<option value="">Önce İlçe</option>';
+        mahalleSelect.innerHTML = '<option value="">Önce İlçe Seçin</option>';
         mahalleSelect.disabled = true;
 
         if (!ilId) return;
 
+        // Bursa seçilmişse doğrudan yerel veri ile anında aç
+        if (ilId === 16) {
+          populateIlceler(BURSA_ILCELERI);
+          return;
+        }
+
         try {
           const url = `https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/ilceListe/${ilId}`;
-          const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-          const data = await res.json();
-          ilceSelect.innerHTML = '<option value="">İlçe Seçiniz...</option>';
-          data.forEach(item => {
-            const opt = document.createElement('option');
-            opt.value = item.id;
-            opt.innerText = item.text || item.ad;
-            ilceSelect.appendChild(opt);
-          });
-          ilceSelect.disabled = false;
+          const data = await fetchWithFallbackProxy(url);
+          populateIlceler(data);
         } catch (err) {
-          ilceSelect.innerHTML = '<option value="">İlçeler Alınamadı</option>';
+          ilceSelect.innerHTML = '<option value="">İlçeler Alınamadı (Tekrar Deneyin)</option>';
         }
       });
 
-      document.getElementById('select-ilce').addEventListener('change', async (e) => {
+      function populateIlceler(list) {
+        ilceSelect.innerHTML = '<option value="">İlçe Seçiniz...</option>';
+        list.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.id;
+          opt.innerText = item.text || item.ad;
+          ilceSelect.appendChild(opt);
+        });
+        ilceSelect.disabled = false;
+      }
+
+      // İlçe Seçildiğinde
+      ilceSelect.addEventListener('change', async (e) => {
         const ilceId = e.target.value;
-        const mahalleSelect = document.getElementById('select-mahalle');
         mahalleSelect.innerHTML = '<option value="">Yükleniyor...</option>';
         mahalleSelect.disabled = true;
 
@@ -732,8 +783,7 @@
 
         try {
           const url = `https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/mahalleListe/${ilceId}`;
-          const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-          const data = await res.json();
+          const data = await fetchWithFallbackProxy(url);
           mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz...</option>';
           data.forEach(item => {
             const opt = document.createElement('option');
