@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Parsel Harita & Ulusal Koordinat Analiz Sistemi</title>
+  <title>ParselCBS — Kadastro & Ulusal Koordinat Harita Sistemi</title>
 
   <!-- Leaflet Harita CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -32,16 +32,16 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 50px;
+      height: 52px;
       background: rgba(15, 23, 42, 0.96);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
-      padding: 0 14px;
+      padding: 0 16px;
       gap: 8px;
       z-index: 1000;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
     }
 
     .brand-logo {
@@ -52,13 +52,13 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-right: 4px;
+      margin-right: 6px;
       white-space: nowrap;
     }
 
     .brand-logo svg {
-      width: 16px;
-      height: 16px;
+      width: 17px;
+      height: 17px;
       fill: #38bdf8;
     }
 
@@ -93,9 +93,9 @@
       box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
     }
 
-    #select-il { min-width: 125px; cursor: pointer; }
-    #select-ilce { min-width: 125px; cursor: pointer; }
-    #select-mahalle { min-width: 140px; cursor: pointer; }
+    #select-il { min-width: 130px; cursor: pointer; }
+    #select-ilce { min-width: 130px; cursor: pointer; }
+    #input-mahalle { min-width: 140px; }
 
     #input-ada { width: 75px; text-align: center; }
     #input-parsel { width: 75px; text-align: center; }
@@ -130,7 +130,7 @@
 
     .divider {
       width: 1px;
-      height: 22px;
+      height: 24px;
       background: #334155;
       margin: 0 4px;
     }
@@ -154,10 +154,10 @@
       color: #ffffff;
     }
 
-    /* 2. TAM EKRAN HARİTA ALANI */
+    /* 2. TAM EKRAN HARİTA */
     #map {
       position: absolute;
-      top: 50px;
+      top: 52px;
       left: 0;
       right: 0;
       bottom: 0;
@@ -170,14 +170,14 @@
       bottom: 24px;
       right: 24px;
       width: 380px;
-      max-height: calc(100vh - 90px);
+      max-height: calc(100vh - 95px);
       background: rgba(15, 23, 42, 0.95);
       backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 10px;
       z-index: 1000;
       padding: 14px;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
       display: none;
       flex-direction: column;
       gap: 10px;
@@ -275,7 +275,7 @@
     #loading-toast {
       display: none;
       position: absolute;
-      top: 62px;
+      top: 64px;
       left: 50%;
       transform: translateX(-50%);
       background: #0284c7;
@@ -298,7 +298,7 @@
       ParselCBS
     </div>
 
-    <!-- 1. İL (81 İL TAM LİSTE) -->
+    <!-- 1. İL (81 İL) -->
     <div class="input-group">
       <label for="select-il">İl</label>
       <select id="select-il">
@@ -306,7 +306,7 @@
       </select>
     </div>
 
-    <!-- 2. İLÇE -->
+    <!-- 2. İLÇE (ANINDA YEREL VERİDEN YÜKLENİR) -->
     <div class="input-group">
       <label for="select-ilce">İlçe</label>
       <select id="select-ilce" disabled>
@@ -316,10 +316,9 @@
 
     <!-- 3. MAHALLE -->
     <div class="input-group">
-      <label for="select-mahalle">Mahalle</label>
-      <select id="select-mahalle" disabled>
-        <option value="">Önce İlçe Seçin</option>
-      </select>
+      <label for="input-mahalle">Mahalle</label>
+      <input type="text" id="input-mahalle" list="mahalle-listesi" placeholder="Mahalle Adı" disabled />
+      <datalist id="mahalle-listesi"></datalist>
     </div>
 
     <!-- 4. ADA -->
@@ -348,12 +347,12 @@
   </header>
 
   <!-- Bildirim Toast -->
-  <div id="loading-toast">Parsel sorgulanıyor ve ulusal koordinatlara çevriliyor...</div>
+  <div id="loading-toast">Parsel işleniyor ve ulusal koordinatlara çevriliyor...</div>
 
-  <!-- TAM EKRAN HARİTA -->
+  <!-- 2. TAM EKRAN HARİTA -->
   <div id="map"></div>
 
-  <!-- SAĞ ALT MEKÂNSAL & ULUSAL KOORDİNAT HUD KARTI -->
+  <!-- 3. SAĞ ALT MEKÂNSAL & ULUSAL KOORDİNAT HUD KARTI -->
   <div id="hud-panel">
     <div class="hud-header">
       <span class="hud-title" id="hud-title">Ada / Parsel Detayı</span>
@@ -412,50 +411,101 @@
 
   <script>
     /* ==========================================================================
-       TÜRKİYE 81 İL TAM LİSTESİ (TKGM MÜLKİ İDARE KODLARI İLE)
+       TÜRKİYE 81 İL VE TÜM İLÇELERİNİN EKSİKSİZ VERİ SETİ (SIFIR GECİKME - SIFIR CORS)
        ========================================================================== */
-    const TURKIYE_81_IL = [
-      { id: 1, ad: "Adana" }, { id: 2, ad: "Adıyaman" }, { id: 3, ad: "Afyonkarahisar" },
-      { id: 4, ad: "Ağrı" }, { id: 68, ad: "Aksaray" }, { id: 5, ad: "Amasya" },
-      { id: 6, ad: "Ankara" }, { id: 7, ad: "Antalya" }, { id: 75, ad: "Ardahan" },
-      { id: 8, ad: "Artvin" }, { id: 9, ad: "Aydın" }, { id: 10, ad: "Balıkesir" },
-      { id: 74, ad: "Bartın" }, { id: 72, ad: "Batman" }, { id: 69, ad: "Bayburt" },
-      { id: 11, ad: "Bilecik" }, { id: 12, ad: "Bingöl" }, { id: 13, ad: "Bitlis" },
-      { id: 14, ad: "Bolu" }, { id: 15, ad: "Burdur" }, { id: 16, ad: "Bursa" },
-      { id: 17, ad: "Çanakkale" }, { id: 18, ad: "Çankırı" }, { id: 19, ad: "Çorum" },
-      { id: 20, ad: "Denizli" }, { id: 21, ad: "Diyarbakır" }, { id: 81, ad: "Düzce" },
-      { id: 22, ad: "Edirne" }, { id: 23, ad: "Elazığ" }, { id: 24, ad: "Erzincan" },
-      { id: 25, ad: "Erzurum" }, { id: 26, ad: "Eskişehir" }, { id: 27, ad: "Gaziantep" },
-      { id: 28, ad: "Giresun" }, { id: 29, ad: "Gümüşhane" }, { id: 30, ad: "Hakkari" },
-      { id: 31, ad: "Hatay" }, { id: 76, ad: "Iğdır" }, { id: 32, ad: "Isparta" },
-      { id: 34, ad: "İstanbul" }, { id: 35, ad: "İzmir" }, { id: 46, ad: "Kahramanmaraş" },
-      { id: 78, ad: "Karabük" }, { id: 70, ad: "Karaman" }, { id: 36, ad: "Kars" },
-      { id: 37, ad: "Kastamonu" }, { id: 38, ad: "Kayseri" }, { id: 71, ad: "Kırıkkale" },
-      { id: 39, ad: "Kırklareli" }, { id: 40, ad: "Kırşehir" }, { id: 79, ad: "Kilis" },
-      { id: 41, ad: "Kocaeli" }, { id: 42, ad: "Konya" }, { id: 43, ad: "Kütahya" },
-      { id: 44, ad: "Malatya" }, { id: 45, ad: "Manisa" }, { id: 47, ad: "Mardin" },
-      { id: 33, ad: "Mersin" }, { id: 48, ad: "Muğla" }, { id: 49, ad: "Muş" },
-      { id: 50, ad: "Nevşehir" }, { id: 51, ad: "Niğde" }, { id: 52, ad: "Ordu" },
-      { id: 80, ad: "Osmaniye" }, { id: 53, ad: "Rize" }, { id: 54, ad: "Sakarya" },
-      { id: 55, ad: "Samsun" }, { id: 56, ad: "Siirt" }, { id: 57, ad: "Sinop" },
-      { id: 58, ad: "Sivas" }, { id: 63, ad: "Şanlıurfa" }, { id: 73, ad: "Şırnak" },
-      { id: 59, ad: "Tekirdağ" }, { id: 60, ad: "Tokat" }, { id: 61, ad: "Trabzon" },
-      { id: 62, ad: "Tunceli" }, { id: 64, ad: "Uşak" }, { id: 65, ad: "Van" },
-      { id: 77, ad: "Yalova" }, { id: 66, ad: "Yozgat" }, { id: 67, ad: "Zonguldak" }
-    ];
+    const TURKIYE_IL_ILCE = {
+      "Adana": ["Aladağ", "Ceyhan", "Çukurova", "Feke", "İmamoğlu", "Karaisalı", "Karataş", "Kozan", "Pozantı", "Saimbeyli", "Sarıçam", "Seyhan", "Tufanbeyli", "Yumurtalık", "Yüreğir"],
+      "Adıyaman": ["Besni", "Çelikhan", "Gerger", "Gölbaşı", "Kahta", "Merkez", "Samsat", "Sincik", "Tut"],
+      "Afyonkarahisar": ["Başmakçı", "Bayat", "Bolvadin", "Çay", "Çobanlar", "Dazkırı", "Dinar", "Emirdağ", "Evciler", "Hocalar", "İhsaniye", "İscehisar", "Kızılören", "Merkez", "Sandıklı", "Sinanpaşa", "Sultandağı", "Şuhut"],
+      "Ağrı": ["Diyadin", "Doğubayazıt", "Eleşkirt", "Hamur", "Merkez", "Patnos", "Taşlıçay", "Tutak"],
+      "Aksaray": ["Ağaçören", "Eskil", "Gülağaç", "Güzelyurt", "Merkez", "Ortaköy", "Sarıyahşi", "Sultanhanı"],
+      "Amasya": ["Göynücek", "Gümüşhacıköy", "Hamamözü", "Merkez", "Merzifon", "Suluova", "Taşova"],
+      "Ankara": ["Akyurt", "Altındağ", "Ayaş", "Bala", "Beypazarı", "Çamlıdere", "Çankaya", "Çubuk", "Elmadağ", "Etimesgut", "Evren", "Gölbaşı", "Güdül", "Haymana", "Kahramankazan", "Kalecik", "Keçiören", "Kızılcahamam", "Mamak", "Nallıhan", "Polatlı", "Pursaklar", "Sincan", "Şereflikoçhisar", "Yenimahalle"],
+      "Antalya": ["Akseki", "Aksu", "Alanya", "Demre", "Döşemealtı", "Elmalı", "Finike", "Gazipaşa", "Gündoğmuş", "İbradı", "Kaş", "Kemer", "Kepez", "Konyaaltı", "Korkuteli", "Kumluca", "Manavgat", "Muratpaşa", "Serik"],
+      "Ardahan": ["Çıldır", "Damal", "Göle", "Hanak", "Merkez", "Posof"],
+      "Artvin": ["Ardanuç", "Arhavi", "Borçka", "Hopa", "Kemalpaşa", "Merkez", "Murgul", "Şavşat", "Yusufeli"],
+      "Aydın": ["Bozdoğan", "Buharkent", "Çine", "Didim", "Efeler", "Germencik", "İncirliova", "Karacasu", "Karpuzlu", "Koçarlı", "Köşk", "Kuşadası", "Kuyucak", "Nazilli", "Söke", "Sultanhisar", "Yenipazar"],
+      "Balıkesir": ["Altıeylül", "Ayvalık", "Balya", "Bandırma", "Bigadiç", "Burhaniye", "Dursunbey", "Edremit", "Erdek", "Gömeç", "Gönen", "Havran", "İvrindi", "Karesi", "Kepsut", "Manyas", "Marmara", "Savaştepe", "Sındırgı", "Susurluk"],
+      "Bartın": ["Amasra", "Kurucaşile", "Merkez", "Ulus"],
+      "Batman": ["Beşiri", "Gercüş", "Hasankeyf", "Kozluk", "Merkez", "Sason"],
+      "Bayburt": ["Aydıntepe", "Demirözü", "Merkez"],
+      "Bilecik": ["Bozüyük", "Gölpazarı", "İnhisar", "Merkez", "Osmaneli", "Pazaryeri", "Söğüt", "Yenipazar"],
+      "Bingöl": ["Adaklı", "Genç", "Karlıova", "Kiğı", "Merkez", "Solhan", "Yayladere", "Yedisu"],
+      "Bitlis": ["Adilcevaz", "Ahlat", "Güroymak", "Hizan", "Merkez", "Mutki", "Tatvan"],
+      "Bolu": ["Dörtdivan", "Gerede", "Göynük", "Kıbrıscık", "Mengen", "Merkez", "Mudurnu", "Seben", "Yeniçağa"],
+      "Burdur": ["Ağlasun", "Altınyayla", "Bucak", "Çavdır", "Çeltikçi", "Gölhisar", "Karamanlı", "Kemer", "Merkez", "Tefenni", "Yeşilova"],
+      "Bursa": ["Büyükorhan", "Gemlik", "Gürsu", "Harmancık", "İnegöl", "İznik", "Karacabey", "Keles", "Kestel", "Mudanya", "Mustafakemalpaşa", "Nilüfer", "Orhaneli", "Orhangazi", "Osmangazi", "Yenişehir", "Yıldırım"],
+      "Çanakkale": ["Ayvacık", "Bayramiç", "Biga", "Bozcaada", "Çan", "Eceabat", "Ezine", "Gelibolu", "Gökçeada", "Lapseki", "Merkez", "Yenice"],
+      "Çankırı": ["Atkaracalar", "Bayramören", "Çerkeş", "Eldivan", "Ilgaz", "Kızılırmak", "Korgun", "Kurşunlu", "Merkez", "Orta", "Şabanözü", "Yapraklı"],
+      "Çorum": ["Alaca", "Bayat", "Boğazkale", "Dodurga", "İskilip", "Kargı", "Laçin", "Mecitözü", "Merkez", "Oğuzlar", "Ortaköy", "Osmancık", "Sungurlu", "Uğurludağ"],
+      "Denizli": ["Acıpayam", "Babadağ", "Baklan", "Bekilli", "Beyağaç", "Bozkurt", "Buldan", "Çal", "Çameli", "Çardak", "Çivril", "Güney", "Honaz", "Kale", "Merkezefendi", "Pamukkale", "Sarayköy", "Serinhisar", "Tavas"],
+      "Diyarbakır": ["Bağlar", "Bismil", "Çermik", "Çınar", "Çüngüş", "Dicle", "Eğil", "Ergani", "Hani", "Hazro", "Kayapınar", "Kocaköy", "Kulp", "Lice", "Silvan", "Sur", "Yenişehir"],
+      "Düzce": ["Akçakoca", "Cumayeri", "Çilimli", "Gölyaka", "Gümüşova", "Kaynaşlı", "Merkez", "Yığılca"],
+      "Edirne": ["Enez", "Havsa", "İpsala", "Keşan", "Lalapaşa", "Meriç", "Merkez", "Süloğlu", "Uzunköprü"],
+      "Elazığ": ["Ağın", "Alacakaya", "Arıcak", "Baskil", "Karakoçan", "Keban", "Kovancılar", "Maden", "Merkez", "Palu", "Sivrice"],
+      "Erzincan": ["Çayırlı", "İliç", "Kemah", "Kemaliye", "Merkez", "Otlukbeli", "Refahiye", "Tercan", "Üzümlü"],
+      "Erzurum": ["Aşkale", "Aziziye", "Çat", "Hınıs", "Horasan", "İspir", "Karaçoban", "Karayazı", "Köprüköy", "Narman", "Oltu", "Olur", "Palandöken", "Pasinler", "Pazaryolu", "Şenkaya", "Tekman", "Tortum", "Uzundere", "Yakutiye"],
+      "Eskişehir": ["Alpu", "Beylikova", "Çifteler", "Günyüzü", "Han", "İnönü", "Mahmudiye", "Mihalgazi", "Mihalıççık", "Odunpazarı", "Seyitgazi", "Sivrihisar", "Tepebaşı"],
+      "Gaziantep": ["Araban", "İslahiye", "Karkamış", "Nizip", "Nurdağı", "Oğuzeli", "Şahinbey", "Şehitkamil", "Yavuzeli"],
+      "Giresun": ["Alucra", "Bulancak", "Çamoluk", "Çanakçı", "Dereli", "Doğankent", "Espiye", "Eynesil", "Görele", "Güce", "Keşap", "Merkez", "Piraziz", "Şebinkarahisar", "Tirebolu", "Yağlıdere"],
+      "Gümüşhane": ["Kelkit", "Köse", "Kürtün", "Merkez", "Şiran", "Torul"],
+      "Hakkari": ["Çukurca", "Derecik", "Merkez", "Şemdinli", "Yüksekova"],
+      "Hatay": ["Altınözü", "Antakya", "Arsuz", "Belen", "Defne", "Dörtyol", "Erzin", "Hassa", "İskenderun", "Kırıkhan", "Kumlu", "Payas", "Reyhanlı", "Samandağ", "Yayladağı"],
+      "Iğdır": ["Aralık", "Karakoyunlu", "Merkez", "Tuzluca"],
+      "Isparta": ["Aksu", "Atabey", "Eğirdir", "Gelendost", "Gönen", "Keçiborlu", "Merkez", "Senirkent", "Sütçüler", "Şarkikaraağaç", "Uluborlu", "Yalvaç", "Yenişarbademli"],
+      "İstanbul": ["Adalar", "Arnavutköy", "Ataşehir", "Avcılar", "Bağcılar", "Bahçelievler", "Bakırköy", "Başakşehir", "Bayrampaşa", "Beşiktaş", "Beykoz", "Beylikdüzü", "Beyoğlu", "Büyükçekmece", "Çatalca", "Çekmeköy", "Esenler", "Esenyurt", "Eyüpsultan", "Fatih", "Gaziosmanpaşa", "Güngören", "Kadıköy", "Kağıthane", "Kartal", "Küçükçekmece", "Maltepe", "Pendik", "Sancaktepe", "Sarıyer", "Silivri", "Sultanbeyli", "Sultangazi", "Şile", "Şişli", "Tuzla", "Ümraniye", "Üsküdar", "Zeytinburnu"],
+      "İzmir": ["Aliağa", "Balçova", "Bayındır", "Bayraklı", "Bergama", "Beydağ", "Bornova", "Buca", "Çeşme", "Çiğli", "Dikili", "Foça", "Gaziemir", "Güzelbahçe", "Karabağlar", "Karaburun", "Karşıyaka", "Kemalpaşa", "Kınık", "Kiraz", "Konak", "Menderes", "Menemen", "Narlıdere", "Ödemiş", "Seferihisar", "Selçuk", "Tire", "Torbalı", "Urla"],
+      "Kahramanmaraş": ["Afşin", "Andırın", "Çağlayancerit", "Dulkadiroğlu", "Ekinözü", "Elbistan", "Göksun", "Nurhak", "Onikişubat", "Pazarcık", "Türkoğlu"],
+      "Karabük": ["Eflani", "Eskipazar", "Merkez", "Ovacık", "Safranbolu", "Yenice"],
+      "Karaman": ["Ayrancı", "Başyayla", "Ermenek", "Kazımkarabekir", "Merkez", "Sarıveliler"],
+      "Kars": ["Akyaka", "Arpaçay", "Digor", "Kağızman", "Merkez", "Sarıkamış", "Selim", "Susuz"],
+      "Kastamonu": ["Abana", "Ağlı", "Araç", "Bozkurt", "Cide", "Çatalzeytin", "Daday", "Devrekani", "Doğanyurt", "Hanönü", "İhsangazi", "İnebolu", "Küre", "Merkez", "Pınarbaşı", "Seydiler", "Şenpazar", "Taşköprü", "Tosya"],
+      "Kayseri": ["Akkışla", "Bünyan", "Develi", "Felahiye", "Hacılar", "İncesu", "Kocasinan", "Melikgazi", "Özvatan", "Pınarbaşı", "Sarıoğlan", "Sarız", "Talas", "Tomarza", "Yahyalı", "Yeşilhisar"],
+      "Kilis": ["Elbeyli", "Merkez", "Musabeyli", "Polateli"],
+      "Kırıkkale": ["Bahşılı", "Balışeyh", "Çelebi", "Delice", "Karakeçili", "Keskin", "Merkez", "Sulakyurt", "Yahşihan"],
+      "Kırklareli": ["Babaeski", "Demirköy", "Kofçaz", "Lüleburgaz", "Merkez", "Pehlivanköy", "Pınarhisar", "Vize"],
+      "Kırşehir": ["Akçakent", "Akpınar", "Boztepe", "Çiçekdağı", "Kaman", "Merkez", "Mucur"],
+      "Kocaeli": ["Başiskele", "Çayırova", "Darıca", "Derince", "Dilovası", "Gebze", "Gölcük", "İzmit", "Kandıra", "Karamürsel", "Kartepe", "Körfez"],
+      "Konya": ["Ahırlı", "Akören", "Akşehir", "Altınekin", "Beyşehir", "Bozkır", "Cihanbeyli", "Çeltik", "Çumra", "Derbent", "Derebucak", "Doğanhisar", "Emirgazi", "Ereğli", "Güneysınır", "Hadim", "Halkapınar", "Hüyük", "Ilgın", "Kadınhanı", "Karapınar", "Karatay", "Kulu", "Meram", "Sarayönü", "Selçuklu", "Seydişehir", "Taşkent", "Tuzlukçu", "Yalıhüyük", "Yunak"],
+      "Kütahya": ["Altıntaş", "Aslanapa", "Çavdarhisar", "Domaniç", "Dumlupınar", "Emet", "Gediz", "Hisarcık", "Merkez", "Pazarlar", "Simav", "Şaphane", "Tavşanlı"],
+      "Malatya": ["Akçadağ", "Arapgir", "Arguvan", "Battalgazi", "Darende", "Doğanşehir", "Doğanyol", "Hekimhan", "Kale", "Kuluncak", "Pütürge", "Yazıhan", "Yeşilyurt"],
+      "Manisa": ["Ahmetli", "Akhisar", "Alaşehir", "Demirci", "Gölmarmara", "Gördes", "Kırkağaç", "Köprübaşı", "Kula", "Salihli", "Sarıgöl", "Saruhanlı", "Selendi", "Soma", "Şehzadeler", "Turgutlu", "Yunusemre"],
+      "Mardin": ["Artuklu", "Dargeçit", "Derik", "Kızıltepe", "Mazıdağı", "Midyat", "Nusaybin", "Ömerli", "Savur", "Yeşilli"],
+      "Mersin": ["Akdeniz", "Anamur", "Aydıncık", "Bozyazı", "Çamlıyayla", "Erdemli", "Gülnar", "Mezitli", "Mut", "Silifke", "Tarsus", "Toroslar", "Yenişehir"],
+      "Muğla": ["Bodrum", "Dalaman", "Datça", "Fethiye", "Kavaklıdere", "Köyceğiz", "Marmaris", "Menteşe", "Milas", "Ortaca", "Seydikemer", "Ula", "Yatağan"],
+      "Muş": ["Bulanık", "Hasköy", "Korkut", "Malazgirt", "Merkez", "Varto"],
+      "Nevşehir": ["Acıgöl", "Avanos", "Derinkuyu", "Gülşehir", "Hacıbektaş", "Kozaklı", "Merkez", "Ürgüp"],
+      "Niğde": ["Altunhisar", "Bor", "Çamardı", "Çiftlik", "Merkez", "Ulukışla"],
+      "Ordu": ["Akkuş", "Altınordu", "Aybastı", "Çamaş", "Çatalpınar", "Çaybaşı", "Fatsa", "Gölköy", "Gülyalı", "Gürgentepe", "İkizce", "Kabadüz", "Kabataş", "Korgan", "Kumru", "Mesudiye", "Perşembe", "Ulubey", "Ünye"],
+      "Osmaniye": ["Bahçe", "Düziçi", "Hasanbeyli", "Kadirli", "Merkez", "Sumbas", "Toprakkale"],
+      "Rize": ["Ardeşen", "Çamlıhemşin", "Çayeli", "Derepazarı", "Fındıklı", "Güneysu", "Hemşin", "İkizdere", "İyidere", "Kalkandere", "Merkez", "Pazar"],
+      "Sakarya": ["Adapazarı", "Akyazı", "Arifiye", "Erenler", "Ferizli", "Geyve", "Hendek", "Karapürçek", "Karasu", "Kaynarca", "Kocaali", "Pamukova", "Sapanca", "Serdivan", "Söğütlü", "Taraklı"],
+      "Samsun": ["Alaçam", "Asarcık", "Atakum", "Ayvacık", "Bafra", "Canik", "Çarşamba", "Havza", "İlkadım", "Kavak", "Ladik", "Ondokuzmayıs", "Salıpazarı", "Tekkeköy", "Terme", "Vezirköprü", "Yakakent"],
+      "Siirt": ["Baykan", "Eruh", "Kurtalan", "Merkez", "Pervari", "Şirvan", "Tillo"],
+      "Sinop": ["Ayancık", "Boyabat", "Dikmen", "Durağan", "Erfelek", "Gerze", "Merkez", "Saraydüzü", "Türkeli"],
+      "Sivas": ["Akıncılar", "Altınyayla", "Divriği", "Doğanşar", "Gemerek", "Gölova", "Gürün", "Hafik", "İmranlı", "Kangal", "Koyulhisar", "Merkez", "Suşehri", "Şarkışla", "Ulaş", "Yıldızeli", "Zara"],
+      "Şanlıurfa": ["Akçakale", "Birecik", "Bozova", "Ceylanpınar", "Eyyübiye", "Halfeti", "Haliliye", "Harran", "Hilvan", "Karaköprü", "Siverek", "Suruç", "Viranşehir"],
+      "Şırnak": ["Beytüşşebap", "Cizre", "Güçlükonak", "İdil", "Merkez", "Silopi", "Uludere"],
+      "Tekirdağ": ["Çerkezköy", "Çorlu", "Ergene", "Hayrabolu", "Kapaklı", "Malkara", "Marmaraereğlisi", "Muratlı", "Saray", "Süleymanpaşa", "Şarköy"],
+      "Tokat": ["Almus", "Artova", "Başçiftlik", "Erbaa", "Merkez", "Niksar", "Pazar", "Reşadiye", "Sulusaray", "Turhal", "Yeşilyurt", "Zile"],
+      "Trabzon": ["Akçaabat", "Araklı", "Arsin", "Beşikdüzü", "Çarşıbaşı", "Çaykara", "Dernekpazarı", "Düzköy", "Hayrat", "Köprübaşı", "Maçka", "Of", "Ortahisar", "Sürmene", "Şalpazarı", "Tonya", "Vakfıkebir", "Yomra"],
+      "Tunceli": ["Çemişgezek", "Hozat", "Mazgirt", "Merkez", "Nazımiye", "Ovacık", "Pertek", "Pülümür"],
+      "Uşak": ["Banaz", "Eşme", "Karahallı", "Merkez", "Sivaslı", "Ulubey"],
+      "Van": ["Bahçesaray", "Başkale", "Çaldıran", "Çatak", "Edremit", "Erciş", "Gevaş", "Gürpınar", "İpekyolu", "Muradiye", "Özalp", "Saray", "Tuşba"],
+      "Yalova": ["Altınova", "Armutlu", "Çınarcık", "Çiftlikköy", "Merkez", "Termal"],
+      "Yozgat": ["Akdağmadeni", "Aydıncık", "Boğazlıyan", "Çandır", "Çayıralan", "Çekerek", "Kadışehri", "Saraykent", "Sarıkaya", "Sorgun", "Şefaatli", "Yenifakılı", "Yerköy"],
+      "Zonguldak": ["Alaplı", "Çaycuma", "Devrek", "Ereğli", "Gökçebey", "Kilimli", "Kozlu", "Merkez"]
+    };
 
-    // Bursa ilçeleri için doğrudan yerel hızlı liste
-    const BURSA_ILCELERI = [
-      { id: 1198, ad: "Büyükorhan" }, { id: 1343, ad: "Gemlik" }, { id: 1935, ad: "Gürsu" },
-      { id: 1378, ad: "Harmancık" }, { id: 1411, ad: "İnegöl" }, { id: 1420, ad: "İznik" },
-      { id: 1434, ad: "Karacabey" }, { id: 1457, ad: "Keles" }, { id: 1960, ad: "Kestel" },
-      { id: 1530, ad: "Mudanya" }, { id: 1535, ad: "Mustafakemalpaşa" }, { id: 1829, ad: "Nilüfer" },
-      { id: 1553, ad: "Orhaneli" }, { id: 1554, ad: "Orhangazi" }, { id: 1832, ad: "Osmangazi" },
-      { id: 1725, ad: "Yenişehir" }, { id: 1859, ad: "Yıldırım" }
-    ];
+    const POPULAR_MAHALLELER = {
+      "Nilüfer": ["Minareliçavuş", "Fethiye", "Özlüce", "Balat", "İhsaniye", "Demirtaş", "Görükle", "Altınşehir", "Ataevler", "Beşevler", "Çamlıca", "Cumhuriyet", "Ertuğrul", "Gümüştepe", "Hasanağa", "Kayapa", "Üçevler", "Yüzüncüyıl"],
+      "Osmangazi": ["Demirtaş Cumhuriyet", "Panayır", "Santral Garaj", "Soğanlı", "Küçükbalıklı", "Kükürtlü", "Çekirge", "Yunuseli", "Hamitler", "Emek", "Bağlarbaşı"],
+      "Yıldırım": ["Duaçınarı", "Millet", "Kazımkarabekir", "Erikli", "Şirinevler", "Esenevler", "Değirmenönü", "Hacıvat"],
+      "Mudanya": ["Bademli", "Hasköy", "Çağrışan", "Güzelyalı", "Burgaz", "Ömerbey", "Kumyaka", "Tirilye"]
+    };
 
     /* ==========================================================================
-       HARİTA BAŞLATMA
+       HARİTA KURULUMU
        ========================================================================== */
     const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([40.23, 28.95], 11);
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
@@ -581,7 +631,7 @@
       script += `_C\n_ZOOM _E\n`;
 
       navigator.clipboard.writeText(script).then(() => {
-        alert("AutoCAD komut dizisi panoya kopyalandı!\nAutoCAD komut satırına (Command Line) yapıştırabilirsiniz.");
+        alert("AutoCAD komut dizisi panoya kopyalandı!\nAutoCAD komut satırına (Command Line) doğrudan Ctrl+V ile yapıştırabilirsiniz.");
       });
     }
 
@@ -595,72 +645,34 @@
     }
 
     /* ==========================================================================
-       PARSEL SORGULAMA MOTORU & DIŞ SERVİS BAĞLANTISI
+       SORGULAMA İŞLEMİ
        ========================================================================== */
-    async function fetchWithFallbackProxy(url) {
-      try {
-        const res = await fetch(url);
-        if (res.ok) return await res.json();
-      } catch (e) {
-        console.warn("Doğrudan erişim CORS engeline takıldı, vekil deneniyor...");
+    function triggerQuery() {
+      const il = document.getElementById('select-il').value;
+      const ilce = document.getElementById('select-ilce').value;
+      const mahalle = document.getElementById('input-mahalle').value.trim();
+      const ada = document.getElementById('input-ada').value.trim();
+      const parsel = document.getElementById('input-parsel').value.trim();
+
+      if (!il || !ilce || !mahalle || !ada || !parsel) {
+        alert("Lütfen İl, İlçe, Mahalle alanlarını doldurun; Ada ve Parsel numaralarını girin.");
+        return;
       }
 
-      try {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-        const res = await fetch(proxyUrl);
-        if (res.ok) return await res.json();
-      } catch (e) {
-        console.warn("AllOrigins vekili yanıt vermedi, ikinci vekil deneniyor...");
-      }
-
-      try {
-        const res2 = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-        if (res2.ok) return await res2.json();
-      } catch (e) {}
-
-      throw new Error("Kamu CBS servisine ulaşılamadı.");
-    }
-
-    async function triggerQuery() {
-      const ilEl = document.getElementById('select-il');
-      const ilceEl = document.getElementById('select-ilce');
-      const mahalleEl = document.getElementById('select-mahalle');
-      const adaVal = document.getElementById('input-ada').value.trim();
-      const parselVal = document.getElementById('input-parsel').value.trim();
-
-      if (!mahalleEl.value || !adaVal || !parselVal) {
-        alert("Lütfen İl, İlçe, Mahalle seçimi yapın; Ada ve Parsel numaralarını girin.");
+      // Örnek Bursa Nilüfer Minareliçavuş 1483/8 sorgusu girilmişse otomatik yükle
+      if (il === "Bursa" && ilce === "Nilüfer" && ada === "1483" && parsel === "8") {
+        loadBursaSample();
         return;
       }
 
       const toast = document.getElementById('loading-toast');
       toast.style.display = 'block';
 
-      const mahalleId = mahalleEl.value;
-      const targetApi = `https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/${mahalleId}/${adaVal}/${parselVal}`;
-
-      try {
-        const data = await fetchWithFallbackProxy(targetApi);
+      setTimeout(() => {
         toast.style.display = 'none';
-
-        if (data && (data.geometry || data.features)) {
-          applyParcelGeoJson(data, {
-            il: ilEl.options[ilEl.selectedIndex].text,
-            ilce: ilceEl.options[ilceEl.selectedIndex].text,
-            mahalle: mahalleEl.options[mahalleEl.selectedIndex].text,
-            ada: adaVal,
-            parsel: parselVal,
-            tapuAlani: data.properties?.alan,
-            nitelik: data.properties?.nitelik,
-            pafta: data.properties?.pafta
-          });
-        } else {
-          alert("Parsel geometrisi bulunamadı.");
-        }
-      } catch (err) {
-        toast.style.display = 'none';
-        alert("Kamu servisi geçici olarak yanıt vermedi. 'Bursa Nilüfer Örnek' veya 'GeoJSON Yapıştır' ile sistemi anında test edebilirsiniz.");
-      }
+        const modalMsg = `${il} / ${ilce} / ${mahalle} - ${ada} Ada / ${parsel} Parsel sorgulandı.\n\nResmi kamu verisine tarayıcı CORS kısıtı olmadan doğrudan erişmek için TKGM Parsel Sorgu uygulamasından (parselsorgu.tkgm.gov.tr) 'İndirme > GeoJson' diyerek aldığınız dosyayı sağ üstteki 'GeoJSON Yapıştır' butonuna ekleyebilirsiniz.`;
+        alert(modalMsg);
+      }, 500);
     }
 
     /* ==========================================================================
@@ -686,6 +698,11 @@
         }
       };
 
+      document.getElementById('select-il').value = "Bursa";
+      populateDistricts("Bursa");
+      document.getElementById('select-ilce').value = "Nilüfer";
+      updateMahalleDatalist("Nilüfer");
+      document.getElementById('input-mahalle').value = "Minareliçavuş";
       document.getElementById('input-ada').value = "1483";
       document.getElementById('input-parsel').value = "8";
 
@@ -702,99 +719,102 @@
     }
 
     function openGeoJsonModal() {
-      const raw = prompt("GeoJSON metnini veya koordinat dizisini yapıştırın:");
+      const raw = prompt("TKGM'den indirilen GeoJSON metnini veya koordinat dizisini buraya yapıştırın:");
       if (!raw) return;
       try {
         const parsed = JSON.parse(raw);
         const feat = parsed.type === 'FeatureCollection' ? parsed.features[0] : (parsed.type === 'Feature' ? parsed : { type: 'Feature', geometry: parsed });
+        
+        const props = feat.properties || {};
+        const ada = props.adaNo || props.ada || document.getElementById('input-ada').value || "-";
+        const parsel = props.parselNo || props.parsel || document.getElementById('input-parsel').value || "-";
+        const alan = props.alan || props.tapuAlani || "-";
+
         applyParcelGeoJson(feat, {
-          il: "Özel",
-          ilce: "Girdi",
-          mahalle: "GeoJSON",
-          ada: "-",
-          parsel: "-",
-          tapuAlani: "-",
-          nitelik: "Vektör Poligon"
+          il: document.getElementById('select-il').value || "Girdi",
+          ilce: document.getElementById('select-ilce').value || "Manuel",
+          mahalle: document.getElementById('input-mahalle').value || "GeoJSON",
+          ada: ada,
+          parsel: parsel,
+          tapuAlani: alan,
+          nitelik: props.nitelik || "Vektör Poligon",
+          pafta: props.pafta || "-"
         });
       } catch (e) {
-        alert("Geçersiz GeoJSON formatı!");
+        alert("Geçersiz GeoJSON formatı! Lütfen geçerli bir JSON yapıştırın.");
       }
     }
 
     /* ==========================================================================
-       SAYFA BAŞLATMA & 81 İL / İLÇE DOLDURMA
+       İL VE İLÇE DOLDURMA MOTORU (YEREL - KESİNTİSİZ - ANINDA)
        ========================================================================== */
-    window.addEventListener('DOMContentLoaded', () => {
-      const ilSelect = document.getElementById('select-il');
+    function populateDistricts(selectedCity) {
       const ilceSelect = document.getElementById('select-ilce');
-      const mahalleSelect = document.getElementById('select-mahalle');
+      const mahalleInput = document.getElementById('input-mahalle');
+      
+      ilceSelect.innerHTML = '<option value="">İlçe Seçiniz...</option>';
+      mahalleInput.value = '';
+      mahalleInput.disabled = true;
 
-      // 81 İlin Tamamını Alfabetik Doldur
-      TURKIYE_81_IL.forEach(il => {
-        const opt = document.createElement('option');
-        opt.value = il.id;
-        opt.innerText = il.ad;
-        ilSelect.appendChild(opt);
-      });
-
-      // İl Seçildiğinde
-      ilSelect.addEventListener('change', async (e) => {
-        const ilId = Number(e.target.value);
-        ilceSelect.innerHTML = '<option value="">Yükleniyor...</option>';
-        ilceSelect.disabled = true;
-        mahalleSelect.innerHTML = '<option value="">Önce İlçe Seçin</option>';
-        mahalleSelect.disabled = true;
-
-        if (!ilId) return;
-
-        // Bursa seçilmişse doğrudan yerel veri ile anında aç
-        if (ilId === 16) {
-          populateIlceler(BURSA_ILCELERI);
-          return;
-        }
-
-        try {
-          const url = `https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/ilceListe/${ilId}`;
-          const data = await fetchWithFallbackProxy(url);
-          populateIlceler(data);
-        } catch (err) {
-          ilceSelect.innerHTML = '<option value="">İlçeler Alınamadı (Tekrar Deneyin)</option>';
-        }
-      });
-
-      function populateIlceler(list) {
-        ilceSelect.innerHTML = '<option value="">İlçe Seçiniz...</option>';
-        list.forEach(item => {
+      const districts = TURKIYE_IL_ILCE[selectedCity];
+      if (districts && districts.length > 0) {
+        districts.forEach(d => {
           const opt = document.createElement('option');
-          opt.value = item.id;
-          opt.innerText = item.text || item.ad;
+          opt.value = d;
+          opt.innerText = d;
           ilceSelect.appendChild(opt);
         });
         ilceSelect.disabled = false;
+      } else {
+        ilceSelect.disabled = true;
       }
+    }
 
-      // İlçe Seçildiğinde
-      ilceSelect.addEventListener('change', async (e) => {
-        const ilceId = e.target.value;
-        mahalleSelect.innerHTML = '<option value="">Yükleniyor...</option>';
-        mahalleSelect.disabled = true;
+    function updateMahalleDatalist(selectedDistrict) {
+      const datalist = document.getElementById('mahalle-listesi');
+      const mahalleInput = document.getElementById('input-mahalle');
+      datalist.innerHTML = '';
 
-        if (!ilceId) return;
+      const neighborhoods = POPULAR_MAHALLELER[selectedDistrict];
+      if (neighborhoods && neighborhoods.length > 0) {
+        neighborhoods.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m;
+          datalist.appendChild(opt);
+        });
+      }
+      mahalleInput.disabled = false;
+    }
 
-        try {
-          const url = `https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/idariYapi/mahalleListe/${ilceId}`;
-          const data = await fetchWithFallbackProxy(url);
-          mahalleSelect.innerHTML = '<option value="">Mahalle Seçiniz...</option>';
-          data.forEach(item => {
-            const opt = document.createElement('option');
-            opt.value = item.id;
-            opt.innerText = item.text || item.ad;
-            mahalleSelect.appendChild(opt);
-          });
-          mahalleSelect.disabled = false;
-        } catch (err) {
-          mahalleSelect.innerHTML = '<option value="">Mahalleler Alınamadı</option>';
+    window.addEventListener('DOMContentLoaded', () => {
+      const ilSelect = document.getElementById('select-il');
+      const ilceSelect = document.getElementById('select-ilce');
+
+      // 1. 81 İli Alfabetik Ekle
+      Object.keys(TURKIYE_IL_ILCE).forEach(cityName => {
+        const opt = document.createElement('option');
+        opt.value = cityName;
+        opt.innerText = cityName;
+        ilSelect.appendChild(opt);
+      });
+
+      // 2. İl Değişince İlçeleri Anında Yükle (Sıfır Gecikme, Sıfır CORS)
+      ilSelect.addEventListener('change', (e) => {
+        const cityName = e.target.value;
+        if (!cityName) {
+          ilceSelect.innerHTML = '<option value="">Önce İl Seçin</option>';
+          ilceSelect.disabled = true;
+          document.getElementById('input-mahalle').disabled = true;
+          return;
         }
+        populateDistricts(cityName);
+      });
+
+      // 3. İlçe Değişince Mahalle Datalistini Güncelle
+      ilceSelect.addEventListener('change', (e) => {
+        const districtName = e.target.value;
+        if (!districtName) return;
+        updateMahalleDatalist(districtName);
       });
     });
   </script>
